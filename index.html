@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>すくば記念病院 統合管理 V22</title>
+    <title>すくば記念病院 モニター</title>
     <style>
         body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 10px; overflow-y: auto; }
         #lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -54,7 +54,7 @@
     <div class="header">
         <div>
             <div style="font-size:16px; font-weight:bold;">🏥 すくば記念病院 高度医療モニター V22</div>
-            <div class="credit">制作 soukun2525（ディスコードID）<br>協力：一関市消防本部</div>
+            <div class="credit">制作 soukun2525（ディスコードID）<br>クレジット：<a href="https://pocket-se.info/">ポケットサウンド/効果音素材</a></div>
         </div>
         <div id="clock">00:00:00</div>
     </div>
@@ -105,7 +105,7 @@
                 </select>
                 <button class="btn btn-orange" style="margin-bottom:0;" onclick="aedShock()">⚡️ 電気ショック実行</button>
             </div>
-            <button class="btn btn-blue" onclick="asystole()">💀 心停止(フラットライン)</button>
+            <button class="btn btn-blue" onclick="asystole()">🚨  心停止(フラットライン)</button>
             <button class="btn btn-yellow" onmousedown="pupil(true)" onmouseup="pupil(false)">🔦 瞳孔ライト</button>
             <button class="btn btn-green" onclick="startIV()">🩸 点滴タイマー開始</button>
 
@@ -199,7 +199,7 @@
     function aedShock() {
         const j = document.getElementById('dc-joule').value;
         if (deadOsc) { deadOsc.stop(); deadOsc = null; }
-        speak(`出力を${j}に設定。離れてください。ショックを行います。３、２、１、ショック。`);
+        speak(`出力を${j}に設定。ショックを行います。３、２、１、ショック！`);
         setTimeout(() => {
             document.getElementById('shock-flash').style.display = 'block';
             setTimeout(() => { document.getElementById('shock-flash').style.display = 'none'; }, 100);
