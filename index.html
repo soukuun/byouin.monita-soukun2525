@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>すくば記念病院 モニター</title>
+    <title>すくば記念病院 統合管理 V22</title>
     <style>
         body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 10px; overflow-y: auto; }
         #lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -46,14 +46,15 @@
         <h2 style="color:#0055ff;">SECURITY LOGIN</h2>
         <input type="password" id="pw-input" placeholder="パスワードを入力">
         <button class="btn btn-green" onclick="checkPassword()">ログイン</button>
+        <p style="font-size:10px; color:#666; margin-top:10px;">PW: sukuba-monita</p>
     </div>
 </div>
 
 <div id="main-content">
     <div class="header">
         <div>
-            <div style="font-size:16px; font-weight:bold;">🏥 すくば記念病院 高度医療モニター V21</div>
-            <div class="credit">制作 soukun2525（ディスコードID）</div>
+            <div style="font-size:16px; font-weight:bold;">🏥 すくば記念病院 高度医療モニター V22</div>
+            <div class="credit">制作 soukun2525（ディスコードID）<br>協力：一関市消防本部</div>
         </div>
         <div id="clock">00:00:00</div>
     </div>
@@ -85,16 +86,16 @@
                 <select id="voice-select"><option value="normal">女性</option><option value="male">男性</option><option value="robot">ロボ</option></select>
             </div>
 
-            <div class="section-title">💊 薬剤投与</div>
+            <div class="section-title">💊 薬剤自由投与</div>
             <div style="display:flex; gap:5px;">
-                <input type="text" id="drug-name" placeholder="薬剤の名前">
+                <input type="text" id="drug-name" placeholder="薬の名前">
                 <input type="number" id="drug-amount" placeholder="量" style="width:60px;">
                 <select id="drug-unit" style="width:70px;"><option value="mg">mg</option><option value="ml">ml</option><option value="g">g</option></select>
             </div>
             <button class="btn btn-green" onclick="administerDrugFree()">💉 薬剤を投与する</button>
             <div id="drug-log" class="drug-log">【投与履歴】</div>
 
-            <div class="section-title">⚡️ 救急処置・DC出力選択</div>
+            <div class="section-title">⚡️ 救急処置・DC出力</div>
             <div style="display:flex; gap:5px; margin-bottom:5px;">
                 <select id="dc-joule">
                     <option value="50J">50J（小児・初回）</option>
@@ -104,7 +105,7 @@
                 </select>
                 <button class="btn btn-orange" style="margin-bottom:0;" onclick="aedShock()">⚡️ 電気ショック実行</button>
             </div>
-            <button class="btn btn-blue" onclick="asystole()">🚨 心停止(フラットライン)</button>
+            <button class="btn btn-blue" onclick="asystole()">💀 心停止(フラットライン)</button>
             <button class="btn btn-yellow" onmousedown="pupil(true)" onmouseup="pupil(false)">🔦 瞳孔ライト</button>
             <button class="btn btn-green" onclick="startIV()">🩸 点滴タイマー開始</button>
 
@@ -133,13 +134,26 @@
     let hrHistory = new Array(30).fill(72);
 
     function checkPassword() {
-        if (document.getElementById('pw-input').value === CORRECT_PW) {
+        const input = document.getElementById('pw-input').value;
+        if (input === CORRECT_PW) {
             document.getElementById('lock-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
+            
+            // Web Audio APIの初期化
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            draw('ecg', '#0f0'); draw('spo2', '#0ff'); drawHistory();
+            
+            // 描画系の開始
+            startDrawing();
             setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        } else {
+            alert("パスワードが違います");
         }
+    }
+
+    function startDrawing() {
+        draw('ecg', '#0f0'); 
+        draw('spo2', '#0ff'); 
+        drawHistory();
     }
 
     function administerDrugFree() {
@@ -190,7 +204,6 @@
             document.getElementById('shock-flash').style.display = 'block';
             setTimeout(() => { document.getElementById('shock-flash').style.display = 'none'; }, 100);
             if (isDead) {
-                // 出力によって蘇生率を変える演出（100J以上なら復活）
                 if (parseInt(j) >= 100) {
                     isDead = false; hr = 85; spo2 = 96; bp = 112; 
                     document.getElementById('sys-msg').innerText = "心拍再開"; 
